@@ -68,7 +68,8 @@ function latestSearch(res) {
 }
 
 function addToArray(newData, res) {
-  if (newData == undefined) {
+  
+  if (newData == undefined || newData[0] == undefined) {
     res.write("<p>Your search did not return any results.</p>");
     res.end();
     infoArray = [];
@@ -77,7 +78,7 @@ function addToArray(newData, res) {
   if (newData.length >= 10) {
     var length = 10;
   } else {
-    var length = newData.length;
+    var length = newData.length - 1;
   }
   for (var i = 0; i <= length; i++) {
     var pageUrl = "imgur.com/gallery/" + newData[i].id;
@@ -97,9 +98,15 @@ function addToArray(newData, res) {
 
 var server = http.createServer(function(req, res) {
   var origUrl = url.parse(req.url, true);
-  var getOffset = url.parse(req.url, true).query;
-  var pagination = getOffset.offset;
-  if (pagination == undefined) {
+  var getOffset = url.parse(req.url).query;
+  
+  if(getOffset != null){
+    var pagination = getOffset.slice(7);
+  }else{
+    var pagination = undefined;
+  }
+  
+  if (pagination == undefined || pagination == null) {
     var searchTerm = origUrl.pathname.slice(1);
   } else {
     var searchTerm = origUrl.pathname.slice(1) + "/" + pagination;
